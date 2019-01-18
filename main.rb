@@ -1,12 +1,29 @@
 require_relative 'lib/test'
-require_relative 'lib/print_result'
+require_relative 'lib/result_printer'
 
-current_path = __dir__
-file_questions = current_path + "/data/questions.txt"
-dir_results = current_path + "/data/score_results/"
+questions_path = __dir__ + "/data/questions.txt"
+results_path = __dir__ + "/data/results.txt"
 
-test = Test.new(file_questions)
-test.run_test
+test = Test.new(questions_path)
+result = ResultPrinter.new(results_path)
 
-result = PrintResult.new(test.score, dir_results)
-result.print_result
+puts "Введите ваше имя: "
+name = STDIN.gets.chomp
+
+puts "Здравствуй #{name}! Ответь пожалуйта на вопросы"
+
+until test.finished?
+  puts test.ask_question
+
+  user_input = nil
+
+  while user_input != "да" && user_input != "нет" && user_input != "иногда"
+    puts "Введите 'да', 'нет' или 'иногда' и нажмите Enter "
+    user_input = STDIN.gets.chomp.downcase
+  end
+
+  test.count_user_answer(user_input)
+end
+
+puts "Ваш результат: #{test.user_score} балла"
+puts result.print_result(test)

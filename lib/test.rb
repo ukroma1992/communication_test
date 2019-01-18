@@ -1,41 +1,32 @@
 class Test
-  attr_accessor :score
+  attr_reader :user_score
 
+  def initialize(question_path)
+    if File.exist?(question_path)
+      file = File.new(question_path, "r")
+      @questions = file.readlines
+      file.close
+    end
 
-  def initialize(file_path)
-    @score = 0
-    @questions = File.readlines(file_path)
+    @user_score = 0
+    @current_question = 0
   end
 
-  def count_score(user_choice)
-    if user_choice == "a"
-      @score += 2
-    elsif user_choice == "c"
-      @score += 1
-    else
-      @score += 0
-    end
+  def ask_question
+    @questions[@current_question]
   end
 
-  def check_user_input
-    user_choice = gets.chomp.downcase
-    puts user_choice
-
-    while user_choice != "a" && user_choice != "b" && user_choice != "c"
-      user_choice = gets.chomp.downcase
+  def count_user_answer(user_input)
+    if user_input == "да"
+      @user_score += 2
+    elsif user_input == "иногда"
+      @user_score += 1
     end
-    user_choice
+    
+    @current_question += 1
   end
 
-  def run_test
-    choices = ["a - да", "b - нет", "c - иногда"]
-    puts "Пройдите тест «Ваш уровень общительности»."
-
-    @questions.each do |question|
-      puts question
-      puts choices
-      user_choice = check_user_input
-      count_score(user_choice)
-    end
+  def finished?
+    @current_question >= @questions.length
   end
 end
